@@ -30,18 +30,24 @@ func ConnectPostgres(dsn string) (*DB, error) {
 	db.SetMaxIdleConns(maxIdleDbConn)
 	db.SetConnMaxLifetime(maxDbLifeTime)
 
-	err = testDb(err, db)
+	err = testDb(db)
+	if err != nil {
+		return nil, err
+	}
 
 	dbConn.SQL = db
 
-	return dbConn, err
+	return dbConn, nil
 }
 
-func testDb(err error, db *sql.DB) error {
-	err = db.Ping()
+func testDb(db *sql.DB) error {
+	err := db.Ping()
 	if err != nil {
 		fmt.Println("Error:", err)
+		return err
 	}
 
-	return err
+	fmt.Println("*** Ping Successfully ***")
+
+	return nil
 }
